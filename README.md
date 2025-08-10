@@ -55,6 +55,11 @@ mail: jegan@tektutor.org
 userPassword: {SSHA}hashedpassword
 ```
 
+Open LDAP Port in firewall
+```
+sudo ufw allow 389/tcp
+```
+
 Let's see if we can search
 ```
 ldapsearch -x -LLL -H ldap:/// -b dc=tektutor.org,dc=org
@@ -63,3 +68,5 @@ Check logs
 ```
 sudo journalctl -u slapd
 ```
+
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/1478b637-ce11-45c3-a81f-af52d6db5c14" />
