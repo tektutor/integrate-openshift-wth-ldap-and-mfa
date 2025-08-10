@@ -99,23 +99,31 @@ command:
   - start
 ```
 
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/b2fca212-a3c2-4fd0-b9c6-b0d73a83bbff" />
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/4d47c4d5-b4a5-4ad0-b581-efd46a43e46c" />
+
+
 #### Configure Keycloak for LDAP + OTP
 Create a Realm for OpenShift:
 Keycloak Admin Console → Add Realm → Name: openshift
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/6a46c0fa-d5b5-4598-8d90-59e93a521de4" />
 
 Add LDAP User Federation
 Go to User Federation → Add Provider → ldap
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/e4ca3bfc-bcbb-4fe1-bece-44d94f333e25" />
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/b6e4d52f-9dbd-4e44-99e6-7fd2044cd135" />
+
 Configure:
 
 Vendor: Active Directory / Other
 
-Connection URL: ldap://192.168.1.80:389
+Connection URL: ldap://192.168.0.112:389
 
 Bind DN: LDAP bind account
 
 Bind Credential: root@123
 
-Users DN: ou=users,dc=tektutor,dc=org
+Users DN: ou=people,dc=tektutor,dc=org
 
 Enable Sync Registrations = ON if you want to auto-create Keycloak users from LDAP.
 
@@ -201,3 +209,5 @@ If OTP not set up → Enroll OTP app (Google Authenticator, FreeOTP, Authy)
 Enter OTP
 
 Redirect back to OpenShift with authenticated session
+
+<img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/97d2af5f-1db7-4b2f-9395-8e0fd1852c4e" />
