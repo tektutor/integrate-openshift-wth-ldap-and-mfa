@@ -98,3 +98,106 @@ command:
   - /opt/keycloak/bin/kc.sh
   - start
 ```
+
+#### Configure Keycloak for LDAP + OTP
+Create a Realm for OpenShift:
+Keycloak Admin Console → Add Realm → Name: openshift
+
+Add LDAP User Federation
+Go to User Federation → Add Provider → ldap
+Configure:
+
+Vendor: Active Directory / Other
+
+Connection URL: ldap://192.168.1.80:389
+
+Bind DN: LDAP bind account
+
+Bind Credential: root@123
+
+Users DN: ou=users,dc=tektutor,dc=org
+
+Enable Sync Registrations = ON if you want to auto-create Keycloak users from LDAP.
+
+Enable OTP in Realm:
+
+Realm Settings → OTP Policy
+
+Set:
+
+Type: totp
+
+Algorithm: HmacSHA1
+
+Digits: 6
+
+Period: 30
+
+Set "OTP Required for Login" = ON
+
+Force OTP Enrollment:
+
+Authentication → Required Actions → Enable Configure OTP
+
+Set as Default Action.
+
+Add Keycloak as an Identity Provider in OpenShift
+```
+oc edit oauth cluster
+```
+
+<pre>
+spec:
+  identityProviders:
+  - name: keycloak
+    mappingMethod: claim
+    type: OpenID
+    openID:
+      claims:
+        preferredUsername:
+        - LDAP-OTP-MFA
+        name:
+        - name
+        email:
+        - email
+      clientID: openshift
+      clientSecret:
+        name: keycloak-client-secret
+      issuer: https://192.168.1.80/realms/openshift  
+</pre>
+
+Register OpenShift in Keycloak
+In Keycloak:
+
+Go to Clients → Create:
+
+Client ID: openshift
+
+Access Type: confidential
+
+Root URL: https://oauth-openshift.apps.<cluster-domain>/oauth2callback/keycloak
+
+Valid Redirect URIs:
+```
+https://oauth-openshift.apps.<cluster-domain>/*
+```
+
+Save, then generate Client Secret.
+
+Store it in OpenShift:
+```
+oc create secret generic keycloak-client-secret \
+  --from-literal=clientSecret='<secret>' \
+  -n openshift-config
+```
+
+Test the Flow
+Go to OpenShift console → Click Log in with keycloak
+
+Keycloak → Prompt LDAP credentials
+
+If OTP not set up → Enroll OTP app (Google Authenticator, FreeOTP, Authy)
+
+Enter OTP
+
+Redirect back to OpenShift with authenticated session
