@@ -70,3 +70,31 @@ sudo journalctl -u slapd
 ```
 
 <img width="1920" height="1168" alt="image" src="https://github.com/user-attachments/assets/1478b637-ce11-45c3-a81f-af52d6db5c14" />
+
+
+## Deploy keycloak in Openshift
+```
+oc new-project keycloak
+oc apply -f https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/kubernetes/keycloak.yaml
+```
+
+In case Keycloak is running in development mode
+```
+oc set env deployment/keycloak \
+  KC_PROXY=edge \
+  KC_HOSTNAME=<your-route-hostname> \
+  KC_HOSTNAME_STRICT=false \
+  KC_HTTP_ENABLED=true \
+  KC_HOSTNAME_STRICT_HTTPS=false \
+  PROXY_ADDRESS_FORWARDING=true \
+  -n keycloak
+
+oc rollout restart deployment/keycloak -n keycloak
+```
+
+Edit the keycloak deployment and replace start-dev to start
+```
+command:
+  - /opt/keycloak/bin/kc.sh
+  - start
+```
